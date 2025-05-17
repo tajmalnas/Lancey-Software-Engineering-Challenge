@@ -40,6 +40,8 @@ int main(){
     return 0;
 }
 ```
+![image](https://github.com/user-attachments/assets/72bf5703-d973-4473-9141-067c234efcd9)
+
 
 
 ## Problem 2 :- Implement the `accumulate` operation, which, given a collection and an operation to perform on each element of the collection, returns a new collection containing the result of applying that operation to each element of the input collection.
@@ -98,6 +100,9 @@ int main() {
     return 0;
 }
 ```
+![image](https://github.com/user-attachments/assets/79ae0182-d7a4-4028-9919-7462bd950af4)
+
+
 
 ## Problem 3 :- Make a chain of dominoes.
 Compute a way to order a given set of dominoes in such a way that they form a correct domino chain (the dots on one half of a stone match the dots on the neighboring half of an adjacent stone) and that dots on the halves of the stones which don't have a neighbor (the first and last stone) match each other.
@@ -176,6 +181,8 @@ int main(){
 }
 
 ```
+![image](https://github.com/user-attachments/assets/6c655cec-4a2f-47f8-a296-771c12c6517b)
+
 
 ## Problem 4 :- Given a number from 0 to 999,999,999,999, spell out that number in English.
 ##explaination :- 
@@ -208,7 +215,7 @@ If the number is 0, I return "zero"
 If the input is bigger than 999,999,999,999, I return an error
 I made sure to trim extra spaces in the end of the result
 
-🔍 Edge Cases I Handled:
+Edge Cases I Handled:
 0 → "zero"
 Numbers like 100, 101, 110, 999999999999
 Invalid inputs like 1000000000000 → throw an error
@@ -308,3 +315,191 @@ int main(){
 }
 
 ```
+![image](https://github.com/user-attachments/assets/2ca8c1c6-7bc5-48d9-a3bf-5c9fd591247b)
+
+
+
+## Problem 4 :- Given the position of two queens on a chess board, indicate whether or not they are positioned so that they can attack each other.
+##Explaination :- 
+First, I thought about how to represent the board. Since the chessboard is 8x8, and positions are zero-indexed, I just used two pairs of coordinates: one for the white queen and one for the black queen.Now, to check if they can attack each other, I just had to verify these three conditions:
+Same Row : If the rows of both queens are equal, then they are on the same row — so they can attack.
+Same Column: If the columns are equal, then they’re in the same column — attack is possible again.
+Same Diagonal: This was the only slightly tricky part. I remembered that in diagonals, the difference between rows and columns is equal. So I used:
+abs(row1 - row2) == abs(col1 - col2)
+If this is true, then they are on the same diagonal — again, they can attack.
+If any one of these conditions is true, then the queens can attack each other.
+Finally, just for fun and to verify visually, I printed the board showing where the queens are. It helped me confirm that my logic actually works.
+
+```
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Function to check if two queens can attack each other
+bool canQueensAttack(int row1, int col1, int row2, int col2){
+    // Same row
+    if (row1==row2) return true;
+
+    // Same column
+    if (col1==col2) return true;
+
+    // Same diagonal
+    if (abs(row1-row2)==abs(col1-col2)) return true;
+
+    return false;
+}
+
+// Optional: Visualize the chessboard
+void printChessBoard(int row1, int col1, int row2, int col2){
+    cout<<"Chessboard:\n";
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
+            if(i == row1 && j == col1)
+                cout<<"W "; // White Queen
+            else if(i == row2 && j == col2)
+                cout<<"B "; // Black Queen
+            else
+                cout << ". ";
+        }
+        cout << endl;
+    }
+}
+
+int main(){
+    // White Queen at c5 → (row 3, col 2)
+    // Black Queen at f2 → (row 6, col 5)
+    int row1 = 3, col1 = 2;
+    int row2 = 6, col2 = 5;
+
+    // Print the board (optional)
+    printChessBoard(row1, col1, row2, col2);
+
+    // Check if they can attack
+    if (canQueensAttack(row1, col1, row2, col2)){
+        cout<<"\nYes, the queens can attack each other.\n";
+    } else{
+        cout<<"\nNo, the queens cannot attack each other.\n";
+    }
+    return 0;
+}
+
+```
+![image](https://github.com/user-attachments/assets/3e519291-d1b8-46c1-8706-2f21e46ab52e)
+
+
+
+#Problem 6 :- Parse and evaluate simple math word problems returning the answer as an integer.
+##Explaination :- 
+When I first read the problem, I realized it's not a typical math expression with numbers and operators — it's a sentence that needs to be understood and broken down.
+
+Step 1 – Understand the input:
+I saw that the input starts with "What is..." and ends with a "?", and everything in between is describing a math operation in words — like “plus”, “minus”, etc. So, I needed to extract the meaningful parts from the string.
+
+Step 2 – Tokenizing the sentence:
+I thought about splitting the sentence into words, then identifying which are numbers and which are operations. I knew I’d need to convert "plus" into "+", "minus" into "-", and so on. For “multiplied by” and “divided by,” I remembered they are two words but represent a single operator — so I had to handle that specially.
+
+Step 3 – Left-to-right evaluation:
+The question clearly said to ignore operator precedence, which is different from normal math. So I decided I would just process the tokens from left to right, doing one operation at a time.
+
+Step 4 – Error Handling:
+I realized that I also need to be strict:
+If someone gives a question like "What is 5 cubed?", that’s not valid.
+If there are two operators in a row like "plus plus", that’s wrong too.
+If someone divides by zero, I should catch that.
+If it’s not a math question at all, like "Who is the President?", I should reject it.
+
+Step 5 – Putting it together:
+Once I had the parsing logic, the operator conversion, and error checking in place, I combined everything into a function that could evaluate any valid input. I also tested it on various cases to make sure it handled both correct and incorrect input.
+
+```
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <stdexcept>
+using namespace std;
+
+int evaluateWordProblem(const string& input){
+    string question=input;
+    if (question.substr(0, 8) != "What is " || question.back() != '?'){
+        throw invalid_argument("Invalid question format");
+    }
+    question = question.substr(8, question.size() - 9);
+
+    // Replace words with operators
+    vector<string>tokens;
+    istringstream ss(question);
+    string word;
+    while(ss>>word) {
+        if(word=="plus") tokens.push_back("+");
+        else if(word=="minus") tokens.push_back("-");
+        else if(word == "multiplied"){
+            string by;
+            ss>>by;
+            if (by!="by") throw invalid_argument("Invalid syntax after 'multiplied'");
+            tokens.push_back("*");
+        } else if(word == "divided"){
+            string by;
+            ss>>by;
+            if (by != "by") throw invalid_argument("Invalid syntax after 'divided'");
+            tokens.push_back("/");
+        } else{
+            // Could be number
+            try{
+                int num = stoi(word);
+                tokens.push_back(to_string(num));
+            }catch (...) {
+                throw invalid_argument("Unsupported token or syntax: " + word);
+            }
+        }
+    }
+
+    if (tokens.empty()) throw invalid_argument("Empty problem");
+
+    // Evaluate left to right
+    int result = stoi(tokens[0]);
+    for(size_t i=1;i<tokens.size();i+=2){
+        if(i+1>=tokens.size()) throw invalid_argument("Incomplete operation");
+        string op = tokens[i];
+        int num = stoi(tokens[i+1]);
+
+        if(op == "+") result+=num;
+        else if(op=="-") result -= num;
+        else if(op=="*") result *= num;
+        else if(op=="/") {
+            if(num == 0) throw invalid_argument("Division by zero");
+            result/=num;
+        } else {
+            throw invalid_argument("Unknown operation: " + op);
+        }
+    }
+
+    return result;
+}
+
+int main(){
+    vector<string>testCases ={
+        "What is 5?",
+        "What is 5 plus 13?",
+        "What is 7 minus 5?",
+        "What is 6 multiplied by 4?",
+        "What is 25 divided by 5?",
+        "What is 5 plus 13 plus 6?",
+        "What is 3 plus 2 multiplied by 3?",
+        "What is 10 divided by 0?", // should throw error
+        "What is 1 plus plus 2?",    // invalid syntax
+        "What is 5 cubed?",          // unsupported operation
+        "Who is the President?"      // non-math question
+    };
+
+    for(const string& q:testCases){
+        try{
+            cout<<q<<" = "<<evaluateWordProblem(q)<<endl;
+        }catch (const exception& e) {
+            cout <<q<<" => Error: "<<e.what()<<endl;
+        }
+    }
+    return 0;
+}
+
+```
+![image](https://github.com/user-attachments/assets/a2d9b152-6f74-44f1-97cb-33c87d589d12)
