@@ -8,7 +8,7 @@ To solve the problem of finding the first non-repeating (i.e., unique) character
 
 This approach offers both clarity and efficiency (O(n) time and O(k) space, where k is the number of unique characters).
 
-<pre>```
+```
 #include <iostream>
 #include <string>
 #include <map>
@@ -39,4 +39,4 @@ int main(){
     cout<<"The index of the first non-repeating character is: "<<index<<endl;
     return 0;
 }
-```</pre>
+```
