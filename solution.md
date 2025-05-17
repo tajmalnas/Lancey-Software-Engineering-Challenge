@@ -388,7 +388,7 @@ int main(){
 
 
 
-#Problem 6 :- Parse and evaluate simple math word problems returning the answer as an integer.
+## Problem 6 :- Parse and evaluate simple math word problems returning the answer as an integer.
 ##Explaination :- 
 When I first read the problem, I realized it's not a typical math expression with numbers and operators — it's a sentence that needs to be understood and broken down.
 
